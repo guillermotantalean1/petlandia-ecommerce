@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+
+{% block title %}Petlandia - Tienda de Mascotas{% endblock %}
+
+{% block content %}
+<div class="jumbotron text-center bg-light p-5 rounded-3 mb-4">
+    <h1 class="display-4">Bienvenido a Petlandia</h1>
+    <p class="lead">Tu compra ayuda a mascotas necesitadas - Un porcentaje de cada venta va directamente a albergues de rescate animal</p>
+</div>
+
+<div class="row">
+    {% for product in products %}
+    <div class="col-md-4 mb-4">
+        <div class="card h-100">
+            {% if product.image_url %}
+            <img src="{{ product.image_url }}" class="card-img-top" alt="{{ product.name }}">
+            {% else %}
+            <img src="{{ url_for('static', filename='img/default-product.jpg') }}" class="card-img-top" alt="Imagen por defecto">
+            {% endif %}
+            <div class="card-body">
+                <h5 class="card-title">{{ product.name }}</h5>
+                <p class="card-text">{{ product.description[:100] }}...</p>
+                <p class="card-text"><strong>Precio: S/. {{ "%.2f"|format(product.price) }}</strong></p>
+                <p class="card-text"><small class="text-muted">Stock disponible: {{ product.stock }}</small></p>
+            </div>
+            <div class="card-footer bg-white border-top-0">
+                <button class="btn btn-primary w-100" onclick="addToCart({{ product.id }})">
+                    <i class="fas fa-cart-plus"></i> Agregar al carrito
+                </button>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+{% if not products %}
+<div class="text-center py-5">
+    <h3>No hay productos disponibles en este momento</h3>
+    <p>Por favor, vuelve más tarde</p>
+</div>
+{% endif %}
+{% endblock %} 

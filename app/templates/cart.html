@@ -1,0 +1,92 @@
+{% extends "base.html" %}
+
+{% block title %}Carrito de Compras - Petlandia{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h2 class="mb-4">Carrito de Compras</h2>
+
+    {% if cart_items %}
+    <div class="card">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Producto</th>
+                            <th>Precio Unitario</th>
+                            <th>Cantidad</th>
+                            <th>Subtotal</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in cart_items %}
+                        <tr>
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    <img src="{{ item.product.image_url or url_for('static', filename='img/default-product.jpg') }}" 
+                                         alt="{{ item.product.name }}" 
+                                         class="img-thumbnail me-2" 
+                                         style="max-width: 50px;">
+                                    <span>{{ item.product.name }}</span>
+                                </div>
+                            </td>
+                            <td>S/. {{ "%.2f"|format(item.product.price) }}</td>
+                            <td>
+                                <div class="input-group" style="max-width: 120px;">
+                                    <button class="btn btn-outline-secondary" type="button" onclick="updateQuantity({{ item.product.id }}, -1)">
+                                        <i class="fas fa-minus"></i>
+                                    </button>
+                                    <input type="number" class="form-control text-center" value="{{ item.quantity }}" min="1" readonly>
+                                    <button class="btn btn-outline-secondary" type="button" onclick="updateQuantity({{ item.product.id }}, 1)">
+                                        <i class="fas fa-plus"></i>
+                                    </button>
+                                </div>
+                            </td>
+                            <td>S/. {{ "%.2f"|format(item.product.price * item.quantity) }}</td>
+                            <td>
+                                <button class="btn btn-danger btn-sm" onclick="removeFromCart({{ item.product.id }})">
+                                    <i class="fas fa-trash"></i> Eliminar
+                                </button>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <td colspan="3" class="text-end"><strong>Total:</strong></td>
+                            <td><strong>S/. {{ "%.2f"|format(total) }}</strong></td>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <td colspan="3" class="text-end text-muted">
+                                <small>El 10% de tu compra será donado a albergues de rescate animal</small>
+                            </td>
+                            <td><small class="text-muted">S/. {{ "%.2f"|format(total * 0.10) }}</small></td>
+                            <td></td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+        <div class="card-footer text-end">
+            <a href="{{ url_for('index') }}" class="btn btn-secondary">
+                <i class="fas fa-arrow-left"></i> Seguir Comprando
+            </a>
+            <button class="btn btn-primary" onclick="checkout()">
+                <i class="fas fa-shopping-cart"></i> Proceder al Pago
+            </button>
+        </div>
+    </div>
+    {% else %}
+    <div class="text-center py-5">
+        <h3>Tu carrito está vacío</h3>
+        <p>¿Por qué no agregas algunos productos?</p>
+        <a href="{{ url_for('index') }}" class="btn btn-primary mt-3">
+            <i class="fas fa-shopping-bag"></i> Ir a la Tienda
+        </a>
+    </div>
+    {% endif %}
+</div>
+{% endblock %} 
