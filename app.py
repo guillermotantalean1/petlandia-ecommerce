@@ -151,15 +151,21 @@ def manage_product(product_id):
     
     elif request.method == 'DELETE':
         try:
+            # Primero eliminamos todos los items del carrito que referencian a este producto
+            CartItem.query.filter_by(product_id=product_id).delete()
+            
+            # Luego eliminamos la imagen si existe
             if product.image_url:
                 image_path = os.path.join(app.root_path, 'static', product.image_url.split('/static/')[-1])
                 if os.path.exists(image_path):
                     os.remove(image_path)
             
+            # Finalmente eliminamos el producto
             db.session.delete(product)
             db.session.commit()
             return jsonify({'success': True})
         except Exception as e:
+            db.session.rollback()
             return jsonify({'success': False, 'message': str(e)})
 
 @app.route('/admin/product/edit', methods=['POST'])
